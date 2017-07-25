@@ -242,16 +242,26 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String action = "";
 
-        if (mDominateGesture == Gesture.DOWN) {
+        String a = sharedPreferences.getString("gesture0_direction_settings", "");
+        String b = sharedPreferences.getString("gesture0_finger_cnt_settings", "");
+        String c = mDominateGesture.toString();
+        String d = Integer.toString(mDominateCnt);
+
+
+        if (mDominateGesture.toString().equals(sharedPreferences.getString("gesture0_direction_settings", "").toUpperCase())
+                 && Integer.toString(mDominateCnt).equals(sharedPreferences.getString("gesture0_finger_cnt_settings", ""))) {
             action = sharedPreferences.getString("gesture0_action_settings", "");
         }
-        if (mDominateGesture == Gesture.UP) {
+        if (mDominateGesture.toString().equals(sharedPreferences.getString("gesture1_direction_settings", "").toUpperCase())
+                && Integer.toString(mDominateCnt).equals(sharedPreferences.getString("gesture1_finger_cnt_settings", ""))) {
             action = sharedPreferences.getString("gesture1_action_settings", "");
         }
-        if (mDominateGesture == Gesture.LEFT) {
+        if (mDominateGesture.toString().equals(sharedPreferences.getString("gesture2_direction_settings", "").toUpperCase())
+                && Integer.toString(mDominateCnt).equals(sharedPreferences.getString("gesture2_finger_cnt_settings", ""))) {
             action = sharedPreferences.getString("gesture2_action_settings", "");
         }
-        if (mDominateGesture == Gesture.RIGHT) {
+        if (mDominateGesture.toString().equals(sharedPreferences.getString("gesture3_direction_settings", "").toUpperCase())
+                && Integer.toString(mDominateCnt).equals(sharedPreferences.getString("gesture3_finger_cnt_settings", ""))) {
             action = sharedPreferences.getString("gesture3_action_settings", "");
         }
 
