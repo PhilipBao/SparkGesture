@@ -25,6 +25,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Menu;
@@ -422,6 +423,60 @@ public class MainActivity extends AppCompatActivity {
                 Log.v(TAG, "Ringer normal");
             }
         }
+    }
+
+    public void previousTrack() {
+        Intent i = new Intent(Intent.ACTION_MEDIA_BUTTON);
+        i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_PREVIOUS));
+        sendOrderedBroadcast(i, null);
+
+        i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_PREVIOUS));
+        sendOrderedBroadcast(i, null);
+
+        if (getIntent().getExtras() == null) {
+            setNotificationText("Previous Track - none");
+        } else {
+            setNotificationText("Previous Track - success");
+        }
+
+        Log.v(TAG, "Previous track");
+    }
+
+    public void nextTrack() {
+        Intent i = new Intent(Intent.ACTION_MEDIA_BUTTON);
+        i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_NEXT));
+        sendOrderedBroadcast(i, null);
+
+        i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_NEXT));
+        sendOrderedBroadcast(i, null);
+
+        if (getIntent().getExtras() == null) {
+            setNotificationText("Next Track - none");
+        } else {
+            setNotificationText("Next Track - success");
+        }
+
+        Log.v(TAG, "Next track");
+    }
+
+    // Quickly executing this function twice changes tracks for some reason
+    public void pausePlayTrack() {
+        Intent i = new Intent(Intent.ACTION_MEDIA_BUTTON);
+        i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN,
+                KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE));
+        sendOrderedBroadcast(i, null);
+
+        i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP,
+                KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE));
+        sendOrderedBroadcast(i, null);
+
+        if (i.getExtras() == null) {
+            setNotificationText("Pause/Play Track - none");
+        } else {
+            setNotificationText("Pause/Play Track - success");
+        }
+
+        Log.v(TAG, "Pause/Play Track");
     }
 
     private boolean isNotificationPolicyAccessGranted()  {
