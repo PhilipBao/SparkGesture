@@ -56,9 +56,6 @@ public class MainActivity extends AppCompatActivity {
         RIGHT
     }
 
-    private static String MAIN_ACTIVITY_TAG = "MainActivity";
-
-
     private Hashtable<Integer, Point2D> mActivePointers;
     private Hashtable<Integer, Gesture> mActiveGestures;
     private Gesture mDominateGesture;
@@ -131,18 +128,18 @@ public class MainActivity extends AppCompatActivity {
         switch (maskedAction) {
             case MotionEvent.ACTION_DOWN:
             case MotionEvent.ACTION_POINTER_DOWN: {
-                Log.d(MAIN_ACTIVITY_TAG, "MotionEvent.DOWN: ~~~~~");
+                Log.d(TAG, "MotionEvent.DOWN: ~~~~~");
                 // We have a new pointer. Lets add it to the list of pointers
 
                 Point2D f = new Point2D();
                 f.x = event.getX(pointerIndex);
                 f.y = event.getY(pointerIndex);
                 mActivePointers.put(pointerId, f);
-                Log.d(MAIN_ACTIVITY_TAG, "    ~~~~~");
+                Log.d(TAG, "    ~~~~~");
                 break;
             }
             case MotionEvent.ACTION_MOVE: { // a pointer was moved
-                Log.d(MAIN_ACTIVITY_TAG, "MotionEvent.ACTION_MOVE: ~~~~~");
+                Log.d(TAG, "MotionEvent.ACTION_MOVE: ~~~~~");
                 for (int size = event.getPointerCount(), i = 0; i < size; i++) {
                     int pntId = event.getPointerId(i);
                     Point2D point = mActivePointers.get(pntId);
@@ -152,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
                         float oldY = point.y;
                         point.x = event.getX(i);
                         point.y = event.getY(i);
-                        Log.d(MAIN_ACTIVITY_TAG, "oldX: " + oldX + " X: " + point.x + " oldY: " + oldY + " Y: " + point.y);
+                        Log.d(TAG, "oldX: " + oldX + " X: " + point.x + " oldY: " + oldY + " Y: " + point.y);
                         float deltaX = point.x - oldX;
                         float deltaY = point.y - oldY;
                         if (Math.abs(deltaX) < MIN_MOVE_DIST) {
@@ -190,26 +187,26 @@ public class MainActivity extends AppCompatActivity {
                                 ++mDominateCnt;
                             }
                             mActiveGestures.put(pntId, onGoingGesture);
-                            Log.d(MAIN_ACTIVITY_TAG, "onGoingGesture: " + onGoingGesture + " deltaX: " + deltaX + " deltaY: " + deltaY);
+                            Log.d(TAG, "onGoingGesture: " + onGoingGesture + " deltaX: " + deltaX + " deltaY: " + deltaY);
                         }
 
 
                     }
                 }
-                Log.d(MAIN_ACTIVITY_TAG, "dominate gesture: " + mDominateGesture + " with dominate count: " + mDominateCnt);
-                Log.d(MAIN_ACTIVITY_TAG, "    ~~~~~");
+                Log.d(TAG, "dominate gesture: " + mDominateGesture + " with dominate count: " + mDominateCnt);
+                Log.d(TAG, "    ~~~~~");
                 break;
             }
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_POINTER_UP:
             case MotionEvent.ACTION_CANCEL: {
-                Log.d(MAIN_ACTIVITY_TAG, "MotionEvent.UP: ~~~~~");
+                Log.d(TAG, "MotionEvent.UP: ~~~~~");
                 mActivePointers.remove(pointerId);
                 Gesture gestureEnd = mActiveGestures.get(pointerId);
                 if (gestureEnd == mDominateGesture) {
                     if (!fired) {
                         Toast.makeText(this, "Fired Gesture: " + mDominateGesture + " Finger count: " + mDominateCnt + "!", Toast.LENGTH_SHORT).show();
-                        Log.d(MAIN_ACTIVITY_TAG, "Fired Gesture: " + mDominateGesture + " Finger count: " + (mDominateCnt) + "!");
+                        Log.d(TAG, "Fired Gesture: " + mDominateGesture + " Finger count: " + (mDominateCnt) + "!");
                         fired =true;
                     }
                     --mDominateCnt;
@@ -223,8 +220,8 @@ public class MainActivity extends AppCompatActivity {
                     mDominateCnt = 0;
                     fired = false;
                 }
-                Log.d(MAIN_ACTIVITY_TAG, "dominate gesture: " + mDominateGesture + " with dominate count: " + mDominateCnt);
-                Log.d(MAIN_ACTIVITY_TAG, "    ~~~~~");
+                Log.d(TAG, "dominate gesture: " + mDominateGesture + " with dominate count: " + mDominateCnt);
+                Log.d(TAG, "    ~~~~~");
                 break;
             }
         }
