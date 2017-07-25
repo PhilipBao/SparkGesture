@@ -26,6 +26,7 @@
     <string name="left">Left</string>
     <string name="right">Right</string>
 
+    <string name="save">Save</string>
 
     <string-array name="action_array">
         <item>@string/flashlight</item>
