@@ -14,7 +14,8 @@
     <string name="flashlight">Flashlight</string>
     <string name="camera">Camera</string>
     <string name="screenshot">Screenshot</string>
-    <string name="bright">Brightness</string>
+    <string name="brightup">Brightness Up</string>
+    <string name="brightdown">Brightness Down</string>
     <string name="ringer_mode">Normal/Silent/Vibrate Mode</string>
     <string name="pause_play_media">Pause/Play Music</string>
     <string name="previous_media">Previous Music</string>
@@ -30,7 +31,8 @@
         <item>@string/flashlight</item>
         <item>@string/camera</item>
         <item>@string/screenshot</item>
-        <item>@string/bright</item>
+        <item>@string/brightup</item>
+        <item>@string/brightdown</item>
         <item>@string/ringer_mode</item>
         <item>@string/pause_play_media</item>
         <item>@string/previous_media</item>
@@ -50,5 +52,6 @@
         <item>3</item>
     </string-array>
 
-    <string name="pref_general_category">Create new settings</string>
+    <string name="pref_general_category">Qwk Gesture Settings</string>
+
 </resources>

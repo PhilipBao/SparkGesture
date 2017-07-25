@@ -102,14 +102,13 @@ public class SettingsActivity extends PreferenceActivity {
                         lp.setTitle(origTitle + ": " + lp.getEntries()[index].toString());
                         SharedPreferences.Editor sharedPrefsEditor = shareprefs.edit();
                         sharedPrefsEditor.putString("finger_cnt" + index, lp.getEntries()[index].toString());
+
                         sharedPrefsEditor.apply();
                     }
                     return true;
                 }
             });
         }
-
-
 
 
         Preference button = findPreference("save_button");

@@ -263,7 +263,7 @@ public class MainActivity extends AppCompatActivity {
             case "Flashlight": toggleFlashlight(); break;
             case "Camera": openCamera(); break;
             case "Screenshot": takeScreenShot(); break;
-            case "Brightness": adjustBrightness(0 /* TODO */, 20); break;
+            case "Brightness Up": adjustBrightness(brightUp, 10); break;
             case "Normal/Silent/Vibrate Mode": changeRingerMode(); break;
             case "Pause/Play Music": pausePlayTrack(); break;
             case "Next Music": nextTrack(); break;
