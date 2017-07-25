@@ -76,7 +76,7 @@
             android:entryValues="@array/action_array"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/save">
-        <ListPreference android:title="Save Current Settings"
+        <Preference android:title="Save Current Settings"
             android:key="save_button" />
     </PreferenceCategory>
 
