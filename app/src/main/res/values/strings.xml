@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">gesture_spark</string>
+    <string name="app_name">Qwk Screen Gestures</string>
     <string name="action_settings">Settings</string>
     <string name="pref_sync">Settings</string>
     <string name="pref_sync_summ">Setting screen</string>

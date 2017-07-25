@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         noteText = (TextView) this.findViewById(R.id.notification_text);
-        setTitle("Screen Gestures");
+        setTitle("Qwk Screen Gestures");
 
         mActivePointers = new Hashtable<>();
         mActiveGestures = new Hashtable<>();
