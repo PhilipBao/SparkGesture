@@ -1,8 +1,22 @@
 package com.sparkgesture.gesture_spark;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.hardware.Camera;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraManager;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -12,9 +26,15 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Date;
+
 public class MainActivity extends AppCompatActivity {
 
     private static String MAIN_ACTIVITY_TAG = "MainActivity";
+
+    private boolean cameraStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,9 +83,11 @@ public class MainActivity extends AppCompatActivity {
 
         int action = MotionEventCompat.getActionMasked(event);
 
-        switch(action) {
+        switch (action) {
             case (MotionEvent.ACTION_DOWN) :
                 Log.d(MAIN_ACTIVITY_TAG,"Action was DOWN");
+                //toggleFlashlight();
+                takeScreenShot();
                 return true;
             case (MotionEvent.ACTION_MOVE) :
                 Log.d(MAIN_ACTIVITY_TAG,"Action was MOVE");
@@ -82,6 +104,104 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             default :
                 return super.onTouchEvent(event);
+        }
+    }
+
+    public void toggleFlashlight() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            Log.v(MAIN_ACTIVITY_TAG, "ask for camera permissions");
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.CAMERA)) {
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.CAMERA},
+                        0);
+            }
+        } else {
+            CameraManager camManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+            String cameraId = null; // Usually front camera is at 0 position.
+            try {
+                cameraId = camManager.getCameraIdList()[0];
+            } catch (CameraAccessException e) {
+                e.printStackTrace();
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                try {
+                    if (!cameraStatus) {
+                        camManager.setTorchMode(cameraId, true);
+                        cameraStatus = true;
+                    } else {
+                        camManager.setTorchMode(cameraId, false);
+                        cameraStatus = false;
+                    }
+                } catch (CameraAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public void takeScreenShot() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            Log.v(MAIN_ACTIVITY_TAG, "ask for write external storage permissions");
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        0);
+            }
+        } else {
+            Date now = new Date();
+            android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", now);
+
+            try {
+                // image naming and path  to include sd card  appending name you choose for file
+                String mPath = "/sdcard/DCIM/Camera/" + now + ".jpg";
+
+                // create bitmap screen capture
+                View v1 = getWindow().getDecorView().getRootView();
+                v1.setDrawingCacheEnabled(true);
+                Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
+                v1.setDrawingCacheEnabled(false);
+
+                File imageFile = new File(mPath);
+
+                FileOutputStream outputStream = new FileOutputStream(imageFile);
+                int quality = 100;
+                bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
+                outputStream.flush();
+                outputStream.close();
+
+                MediaScannerConnection.scanFile(this,
+                        new String[]{imageFile.toString()}, null,
+                        new MediaScannerConnection.OnScanCompletedListener() {
+                            public void onScanCompleted(String path, Uri uri) {
+                                Log.i(MAIN_ACTIVITY_TAG, "Scanned " + path + ":");
+                                Log.i(MAIN_ACTIVITY_TAG, "-> uri=" + uri);
+                            }
+                        });
+
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                Uri uri = Uri.fromFile(imageFile);
+                intent.setDataAndType(uri, "image/*");
+                startActivity(intent);
+            } catch (Throwable e) {
+                // Several error may come out with file handling or OOM
+                e.printStackTrace();
+            }
         }
     }
 }
