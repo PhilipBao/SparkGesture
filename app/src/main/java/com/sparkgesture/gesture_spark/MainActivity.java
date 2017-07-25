@@ -155,10 +155,10 @@ public class MainActivity extends AppCompatActivity {
                         Log.d(MAIN_ACTIVITY_TAG, "oldX: " + oldX + " X: " + point.x + " oldY: " + oldY + " Y: " + point.y);
                         float deltaX = point.x - oldX;
                         float deltaY = point.y - oldY;
-                        if (deltaX < MIN_MOVE_DIST) {
+                        if (Math.abs(deltaX) < MIN_MOVE_DIST) {
                             point.x = oldX;
                         }
-                        if (deltaY < MIN_MOVE_DIST) {
+                        if (Math.abs(deltaY) < MIN_MOVE_DIST) {
                             point.y = oldY;
                         }
                         mActivePointers.put(pntId, point);
@@ -179,19 +179,20 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
 
-                        if (mActiveGestures.get(pntId) != onGoingGesture) {
+                        if (mActiveGestures.get(pntId) != onGoingGesture && onGoingGesture != Gesture.NONE) {
                             if (onGoingGesture != mDominateGesture) {
                                 --mDominateCnt;
                                 if (mDominateCnt <= 0) {
                                     mDominateGesture = onGoingGesture;
                                     mDominateCnt = 1;
                                 }
-                            } else if (onGoingGesture != Gesture.NONE) {
+                            } else {
                                 ++mDominateCnt;
                             }
+                            mActiveGestures.put(pntId, onGoingGesture);
+                            Log.d(MAIN_ACTIVITY_TAG, "onGoingGesture: " + onGoingGesture + " deltaX: " + deltaX + " deltaY: " + deltaY);
                         }
-                        mActiveGestures.put(pntId, onGoingGesture);
-                        Log.d(MAIN_ACTIVITY_TAG, "onGoingGesture: " + onGoingGesture + " deltaX: " + deltaX + " deltaY: " + deltaY);
+
 
                     }
                 }
