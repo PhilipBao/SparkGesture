@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/pref_screen">
+    <PreferenceCategory android:title="@string/pref_general_category">
+        <EditTextPreference
+            android:id="@+id/theme_title"
+            android:key="theme_title"
+            android:title="Theme Title"/>
+
+        <ListPreference
+            android:key="gesture0_action_settings"
+            android:title="Gesture0"
+            android:entries="@array/action_array"/>
+        <ListPreference
+            android:key="gesture1_action_settings"
+            android:title="Gesture1"
+            android:entries="@array/action_array"/>
+        <ListPreference
+            android:key="gesture2_action_settings"
+            android:title="Gesture2"
+            android:entries="@array/action_array"/>
+        <ListPreference
+            android:key="gesture3_action_settings"
+            android:title="Gesture3"
+            android:entries="@array/action_array"/>
+
+    </PreferenceCategory>
+
+    <Preference android:title="Save Current Setting"
+        android:key="save_button"
+        android:summary="This is a cool button"/>
+
+
+</PreferenceScreen>

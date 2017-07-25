@@ -1,4 +1,20 @@
 <resources>
     <string name="app_name">gesture_spark</string>
     <string name="action_settings">Settings</string>
+    <string name="pref_sync">Settings</string>
+    <string name="pref_sync_summ">Setting screen</string>
+    <string name="wifi_setting">Turn on WiFi</string>
+    <string name="bluetooth_setting">Turn on bluetooth</string>
+    <string name="brightness">Screen Brightness</string>
+
+    <string name="flashlight">Flashlight</string>
+    <string name="camera">Camera</string>
+    <string name="screenshot">Screenshot</string>
+
+    <string-array name="action_array">
+        <item>@string/flashlight</item>
+        <item>@string/camera</item>
+        <item>@string/screenshot</item>
+    </string-array>
+    <string name="pref_general_category">Create new settings</string>
 </resources>
