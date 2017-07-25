@@ -11,19 +11,23 @@
         <ListPreference
             android:key="gesture0_action_settings"
             android:title="Gesture0"
-            android:entries="@array/action_array"/>
+            android:entries="@array/action_array"
+            android:entryValues="@array/action_array"/>
         <ListPreference
             android:key="gesture1_action_settings"
             android:title="Gesture1"
-            android:entries="@array/action_array"/>
+            android:entries="@array/action_array"
+            android:entryValues="@array/action_array"/>
         <ListPreference
             android:key="gesture2_action_settings"
             android:title="Gesture2"
-            android:entries="@array/action_array"/>
+            android:entries="@array/action_array"
+            android:entryValues="@array/action_array"/>
         <ListPreference
             android:key="gesture3_action_settings"
             android:title="Gesture3"
-            android:entries="@array/action_array"/>
+            android:entries="@array/action_array"
+            android:entryValues="@array/action_array"/>
 
     </PreferenceCategory>
 
