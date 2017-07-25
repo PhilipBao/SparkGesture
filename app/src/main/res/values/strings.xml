@@ -6,6 +6,10 @@
     <string name="wifi_setting">Turn on WiFi</string>
     <string name="bluetooth_setting">Turn on bluetooth</string>
     <string name="brightness">Screen Brightness</string>
+    <string name="gesture0">Gesture A</string>
+    <string name="gesture1">Gesture B</string>
+    <string name="gesture2">Gesture C</string>
+    <string name="gesture3">Gesture D</string>
 
     <string name="flashlight">Flashlight</string>
     <string name="camera">Camera</string>
@@ -15,6 +19,11 @@
     <string name="pause_play_media">Pause/Play Music</string>
     <string name="previous_media">Previous Music</string>
     <string name="next_media">Next Music</string>
+
+    <string name="up">Up</string>
+    <string name="down">Down</string>
+    <string name="left">Left</string>
+    <string name="right">Right</string>
 
 
     <string-array name="action_array">
@@ -27,5 +36,19 @@
         <item>@string/previous_media</item>
         <item>@string/next_media</item>
     </string-array>
+
+    <string-array name="direction_array">
+        <item>@string/up</item>
+        <item>@string/down</item>
+        <item>@string/right</item>
+        <item>@string/left</item>
+    </string-array>
+
+    <string-array name="finger_cnt_array">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
     <string name="pref_general_category">Create new settings</string>
 </resources>

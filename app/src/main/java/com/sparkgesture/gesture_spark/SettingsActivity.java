@@ -37,12 +37,71 @@ public class SettingsActivity extends PreferenceActivity {
         for (final ListPreference lp : prefs) {
             lp.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-
                     int index = lp.findIndexOfValue(newValue.toString());
                     if (index != -1)
                     {
+                        String currentTitle = lp.getTitle().toString();
+                        String origTitle = currentTitle.split(":")[0];
+                        lp.setTitle(origTitle + ": " + lp.getEntries()[index].toString());
                         SharedPreferences.Editor sharedPrefsEditor = shareprefs.edit();
-                        sharedPrefsEditor.putString("action", lp.getEntries()[index].toString());
+                        sharedPrefsEditor.putString("action" + index, lp.getEntries()[index].toString());
+                        sharedPrefsEditor.apply();
+                    }
+                    return true;
+                }
+            });
+        }
+
+
+        List<ListPreference> gesturePrefs = new ArrayList<>();
+        final ListPreference gesturedirectionSettings0 = (ListPreference) findPreference("gesture0_direction_settings");
+        gesturePrefs.add(gesturedirectionSettings0);
+        final ListPreference gesturedirectionSettings1 = (ListPreference) findPreference("gesture1_direction_settings");
+        gesturePrefs.add(gesturedirectionSettings1);
+        final ListPreference gesturedirectionSettings2 = (ListPreference) findPreference("gesture2_direction_settings");
+        gesturePrefs.add(gesturedirectionSettings2);
+        final ListPreference gesturedirectionSettings3 = (ListPreference) findPreference("gesture3_direction_settings");
+        gesturePrefs.add(gesturedirectionSettings3);
+
+        for (final ListPreference lp : gesturePrefs) {
+            lp.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    int index = lp.findIndexOfValue(newValue.toString());
+                    if (index != -1)
+                    {
+                        String currentTitle = lp.getTitle().toString();
+                        String origTitle = currentTitle.split(":")[0];
+                        lp.setTitle(origTitle + ": " + lp.getEntries()[index].toString());
+                        SharedPreferences.Editor sharedPrefsEditor = shareprefs.edit();
+                        sharedPrefsEditor.putString("gesture" + index, lp.getEntries()[index].toString());
+                        sharedPrefsEditor.apply();
+                    }
+                    return true;
+                }
+            });
+        }
+
+        List<ListPreference> gestureCntPrefs = new ArrayList<>();
+        final ListPreference gestureFingerCntSettings0 = (ListPreference) findPreference("gesture0_finger_cnt_settings");
+        gestureCntPrefs.add(gestureActionSettings0);
+        final ListPreference gestureFingerCntSettings1 = (ListPreference) findPreference("gesture1_finger_cnt_settings");
+        gestureCntPrefs.add(gestureActionSettings1);
+        final ListPreference gestureFingerCntSettings2 = (ListPreference) findPreference("gesture2_finger_cnt_settings");
+        gestureCntPrefs.add(gestureActionSettings2);
+        final ListPreference gestureFingerCntSettings3 = (ListPreference) findPreference("gesture3_finger_cnt_settings");
+        gestureCntPrefs.add(gestureActionSettings3);
+
+        for (final ListPreference lp : gestureCntPrefs) {
+            lp.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    int index = lp.findIndexOfValue(newValue.toString());
+                    if (index != -1)
+                    {
+                        String currentTitle = lp.getTitle().toString();
+                        String origTitle = currentTitle.split(":")[0];
+                        lp.setTitle(origTitle + ": " + lp.getEntries()[index].toString());
+                        SharedPreferences.Editor sharedPrefsEditor = shareprefs.edit();
+                        sharedPrefsEditor.putString("finger_cnt" + index, lp.getEntries()[index].toString());
                         sharedPrefsEditor.apply();
                     }
                     return true;
