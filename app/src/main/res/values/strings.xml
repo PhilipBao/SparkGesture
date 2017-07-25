@@ -14,6 +14,7 @@
     <string name="flashlight">Flashlight</string>
     <string name="camera">Camera</string>
     <string name="screenshot">Screenshot</string>
+    <string name="dismiss">Dismiss Alarm</string>
     <string name="brightup">Brightness Up</string>
     <string name="brightdown">Brightness Down</string>
     <string name="ringer_mode">Normal/Silent/Vibrate Mode</string>
@@ -32,6 +33,7 @@
         <item>@string/flashlight</item>
         <item>@string/camera</item>
         <item>@string/screenshot</item>
+        <item>@string/dismiss</item>
         <item>@string/brightup</item>
         <item>@string/brightdown</item>
         <item>@string/ringer_mode</item>
