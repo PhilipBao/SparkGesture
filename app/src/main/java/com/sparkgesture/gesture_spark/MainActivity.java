@@ -263,7 +263,7 @@ public class MainActivity extends AppCompatActivity {
             case "Flashlight": toggleFlashlight(); break;
             case "Camera": openCamera(); break;
             case "Screenshot": takeScreenShot(); break;
-            case "Brightness": adjustBrightness(1 /* TODO */, 1); break;
+            case "Brightness": adjustBrightness(0 /* TODO */, 20); break;
             case "Normal/Silent/Vibrate Mode": changeRingerMode(); break;
             case "Pause/Play Music": pausePlayTrack(); break;
             case "Next Music": nextTrack(); break;
@@ -398,14 +398,17 @@ public class MainActivity extends AppCompatActivity {
                     /*Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_BRIGHTNESS_MODE,
                             Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);*/
                     try {
+                        int maxBright = 250;
                         int bright = Settings.System.getInt(getContentResolver(),
                                 Settings.System.SCREEN_BRIGHTNESS);
-                        if (bright > 250) {
+                        if (bright > maxBright) {
                             return;
                         }
 
+                        int clamped = Math.min(maxBright, bright + changeAmt);
+
                         Settings.System.putInt(getContentResolver(),
-                                Settings.System.SCREEN_BRIGHTNESS, bright + changeAmt);
+                                Settings.System.SCREEN_BRIGHTNESS, clamped);
                         Log.v(TAG, String.valueOf(bright));
                     } catch (Settings.SettingNotFoundException e) {
                         e.printStackTrace();
@@ -415,14 +418,17 @@ public class MainActivity extends AppCompatActivity {
                     Log.v(TAG, "Brightness Increase");
                 } else {
                     try {
+                        int minBright = 5;
                         int bright = Settings.System.getInt(getContentResolver(),
                                 Settings.System.SCREEN_BRIGHTNESS);
-                        if (bright < 5) {
+                        if (bright < minBright) {
                             return;
                         }
 
+                        int clamped = Math.max(minBright, bright - changeAmt);
+
                         Settings.System.putInt(getContentResolver(),
-                                Settings.System.SCREEN_BRIGHTNESS, bright - changeAmt);
+                                Settings.System.SCREEN_BRIGHTNESS, clamped);
                         Log.v(TAG, String.valueOf(bright));
                     } catch (Settings.SettingNotFoundException e) {
                         e.printStackTrace();
