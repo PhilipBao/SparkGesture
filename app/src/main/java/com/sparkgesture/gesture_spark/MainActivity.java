@@ -215,6 +215,12 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(cameraIntent, 0);
     }
 
+    public void dismissAlarm() {
+        Intent dismissIntent = new Intent();
+        dismissIntent.setAction("com.android.deskclock.ALARM_DISMISS");
+        sendBroadcast(dismissIntent);
+    }
+
     private void setNotificationText(String action) {
         noteText.setText(action);
     }
