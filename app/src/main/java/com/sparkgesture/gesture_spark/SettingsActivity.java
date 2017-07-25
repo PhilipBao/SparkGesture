@@ -83,13 +83,13 @@ public class SettingsActivity extends PreferenceActivity {
 
         List<ListPreference> gestureCntPrefs = new ArrayList<>();
         final ListPreference gestureFingerCntSettings0 = (ListPreference) findPreference("gesture0_finger_cnt_settings");
-        gestureCntPrefs.add(gestureActionSettings0);
+        gestureCntPrefs.add(gestureFingerCntSettings0);
         final ListPreference gestureFingerCntSettings1 = (ListPreference) findPreference("gesture1_finger_cnt_settings");
-        gestureCntPrefs.add(gestureActionSettings1);
+        gestureCntPrefs.add(gestureFingerCntSettings1);
         final ListPreference gestureFingerCntSettings2 = (ListPreference) findPreference("gesture2_finger_cnt_settings");
-        gestureCntPrefs.add(gestureActionSettings2);
+        gestureCntPrefs.add(gestureFingerCntSettings2);
         final ListPreference gestureFingerCntSettings3 = (ListPreference) findPreference("gesture3_finger_cnt_settings");
-        gestureCntPrefs.add(gestureActionSettings3);
+        gestureCntPrefs.add(gestureFingerCntSettings3);
 
         for (final ListPreference lp : gestureCntPrefs) {
             lp.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
