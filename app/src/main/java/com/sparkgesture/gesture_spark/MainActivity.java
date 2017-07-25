@@ -1,6 +1,7 @@
 package com.sparkgesture.gesture_spark;
 
 import android.Manifest;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -8,6 +9,7 @@ import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
+import android.media.AudioManager;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
@@ -39,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean cameraStatus;
     private TextView noteText;
+    private static final int brightUp = 0;
+    private static final int brightDown = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +100,8 @@ public class MainActivity extends AppCompatActivity {
                 //toggleFlashlight();
                 //takeScreenShot();
                 //openCamera();
-                adjustBrightness(0);
+                //adjustBrightness(brightUp, 2);
+                changeRingerMode();
 
                 return true;
             case (MotionEvent.ACTION_MOVE) :
@@ -272,8 +277,7 @@ public class MainActivity extends AppCompatActivity {
                     setNotificationText("Brightness Decreased!");
                     Log.v(TAG, "Brightness Decrease");
                 }
-            }
-            else {
+            } else {
                 Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS);
                 intent.setData(Uri.parse("package:" + this.getPackageName()));
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -282,6 +286,39 @@ public class MainActivity extends AppCompatActivity {
                 Log.v(TAG, "Ask for write android settings permissions");
             }
         }
+    }
+
+    public void changeRingerMode() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && !isNotificationPolicyAccessGranted()) {
+            Intent intent = new Intent(android.provider.Settings.
+                    ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
+            startActivity(intent);
+        } else {
+            final AudioManager mode = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
+
+            if (mode.getRingerMode() == AudioManager.RINGER_MODE_NORMAL) {
+                mode.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+                setNotificationText("Ringer Mode - Silent!");
+                Log.v(TAG, "Ringer silent");
+            } else if (mode.getRingerMode() == AudioManager.RINGER_MODE_SILENT) {
+                mode.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
+                setNotificationText("Ringer Mode - Vibrate!");
+                Log.v(TAG, "Ringer vibrate");
+            } else if (mode.getRingerMode() == AudioManager.RINGER_MODE_VIBRATE) {
+                mode.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
+                setNotificationText("Ringer Mode - Normal!");
+                Log.v(TAG, "Ringer normal");
+            }
+        }
+    }
+
+    private boolean isNotificationPolicyAccessGranted()  {
+        NotificationManager notificationManager = (NotificationManager)
+                this.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return notificationManager.isNotificationPolicyAccessGranted();
+        }
+        return false;
     }
 
     private void setNotificationText(final String action) {
