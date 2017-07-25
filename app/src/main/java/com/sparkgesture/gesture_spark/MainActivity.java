@@ -182,6 +182,8 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
 
+                        Log.d(TAG, "onGoingGesture: " + onGoingGesture + " deltaX: " + deltaX + " deltaY: " + deltaY);
+
                         if (mActiveGestures.get(pntId) != onGoingGesture && onGoingGesture != Gesture.NONE) {
                             if (onGoingGesture != mDominateGesture) {
                                 --mDominateCnt;
@@ -209,6 +211,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "MotionEvent.UP: ~~~~~");
                 mActivePointers.remove(pointerId);
                 Gesture gestureEnd = mActiveGestures.get(pointerId);
+                mActiveGestures.remove(pointerId);
                 if (gestureEnd == mDominateGesture) {
                     if (!fired) {
                         Toast.makeText(this, "Fired Gesture: " + mDominateGesture + " Finger count: " + mDominateCnt + "!", Toast.LENGTH_SHORT).show();
