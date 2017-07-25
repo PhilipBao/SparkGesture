@@ -92,8 +92,9 @@ public class MainActivity extends AppCompatActivity {
         switch (action) {
             case (MotionEvent.ACTION_DOWN) :
                 Log.d(MAIN_ACTIVITY_TAG,"Action was DOWN");
-                toggleFlashlight();
+                //toggleFlashlight();
                 //takeScreenShot();
+                openCamera();
                 return true;
             case (MotionEvent.ACTION_MOVE) :
                 Log.d(MAIN_ACTIVITY_TAG,"Action was MOVE");
@@ -210,7 +211,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void openCamera() {
-
+        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(cameraIntent, 0);
     }
 
     private void setNotificationText(String action) {
