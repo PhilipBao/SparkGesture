@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -34,7 +35,7 @@ import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static String MAIN_ACTIVITY_TAG = "MainActivity";
+    private static String TAG = "MainActivity";
 
     private boolean cameraStatus;
     private TextView noteText;
@@ -91,22 +92,24 @@ public class MainActivity extends AppCompatActivity {
 
         switch (action) {
             case (MotionEvent.ACTION_DOWN) :
-                Log.d(MAIN_ACTIVITY_TAG,"Action was DOWN");
+                Log.d(TAG,"Action was DOWN");
                 //toggleFlashlight();
                 //takeScreenShot();
-                openCamera();
+                //openCamera();
+                adjustBrightness(0);
+
                 return true;
             case (MotionEvent.ACTION_MOVE) :
-                Log.d(MAIN_ACTIVITY_TAG,"Action was MOVE");
+                Log.d(TAG,"Action was MOVE");
                 return true;
             case (MotionEvent.ACTION_UP) :
-                Log.d(MAIN_ACTIVITY_TAG,"Action was UP");
+                Log.d(TAG,"Action was UP");
                 return true;
             case (MotionEvent.ACTION_CANCEL) :
-                Log.d(MAIN_ACTIVITY_TAG,"Action was CANCEL");
+                Log.d(TAG,"Action was CANCEL");
                 return true;
             case (MotionEvent.ACTION_OUTSIDE) :
-                Log.d(MAIN_ACTIVITY_TAG,"Movement occurred outside bounds " +
+                Log.d(TAG,"Movement occurred outside bounds " +
                         "of current screen element");
                 return true;
             default :
@@ -119,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
                 Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
 
-            Log.v(MAIN_ACTIVITY_TAG, "ask for camera permissions");
+            Log.v(TAG, "Ask for camera permissions");
 
             // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
@@ -144,10 +147,12 @@ public class MainActivity extends AppCompatActivity {
                         camManager.setTorchMode(cameraId, true);
                         cameraStatus = true;
                         setNotificationText("Torch On!");
+                        Log.v(TAG, "Torch Off");
                     } else {
                         camManager.setTorchMode(cameraId, false);
                         cameraStatus = false;
                         setNotificationText("Torch Off!");
+                        Log.v(TAG, "Torch On");
                     }
                 } catch (CameraAccessException e) {
                     e.printStackTrace();
@@ -161,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
 
-            Log.v(MAIN_ACTIVITY_TAG, "ask for write external storage permissions");
+            Log.v(TAG, "Ask for write external storage permissions");
 
             // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
@@ -197,12 +202,13 @@ public class MainActivity extends AppCompatActivity {
                         new String[]{imageFile.toString()}, null,
                         new MediaScannerConnection.OnScanCompletedListener() {
                             public void onScanCompleted(String path, Uri uri) {
-                                Log.i(MAIN_ACTIVITY_TAG, "Scanned " + path + ":");
-                                Log.i(MAIN_ACTIVITY_TAG, "-> uri=" + uri);
+                                Log.i(TAG, "Scanned " + path + ":");
+                                Log.i(TAG, "-> uri=" + uri);
                             }
                         });
 
                 setNotificationText("Screenshot Captured!");
+                Log.v(TAG, "Screenshot Captured");
             } catch (Throwable e) {
                 // Several error may come out with file handling or OOM
                 e.printStackTrace();
@@ -213,15 +219,72 @@ public class MainActivity extends AppCompatActivity {
     public void openCamera() {
         Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
         startActivityForResult(cameraIntent, 0);
+        setNotificationText("Camera Opened!");
+        Log.v(TAG, "Open Camera");
     }
 
     public void dismissAlarm() {
         Intent dismissIntent = new Intent();
         dismissIntent.setAction("com.android.deskclock.ALARM_DISMISS");
         sendBroadcast(dismissIntent);
+        Log.v(TAG, "Dismiss Alarm");
     }
 
-    private void setNotificationText(String action) {
+    public void adjustBrightness(final int upDown, final int changeAmt) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (Settings.System.canWrite(this)) {
+                // 0 - up
+                // 1 - down
+                if (upDown == 0) {
+                    /*Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_BRIGHTNESS_MODE,
+                            Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);*/
+                    try {
+                        int bright = Settings.System.getInt(getContentResolver(),
+                                Settings.System.SCREEN_BRIGHTNESS);
+                        if (bright > 250) {
+                            return;
+                        }
+
+                        Settings.System.putInt(getContentResolver(),
+                                Settings.System.SCREEN_BRIGHTNESS, bright + changeAmt);
+                        Log.v(TAG, String.valueOf(bright));
+                    } catch (Settings.SettingNotFoundException e) {
+                        e.printStackTrace();
+                    }
+
+                    setNotificationText("Brightness Increased!");
+                    Log.v(TAG, "Brightness Increase");
+                } else {
+                    try {
+                        int bright = Settings.System.getInt(getContentResolver(),
+                                Settings.System.SCREEN_BRIGHTNESS);
+                        if (bright < 5) {
+                            return;
+                        }
+
+                        Settings.System.putInt(getContentResolver(),
+                                Settings.System.SCREEN_BRIGHTNESS, bright - changeAmt);
+                        Log.v(TAG, String.valueOf(bright));
+                    } catch (Settings.SettingNotFoundException e) {
+                        e.printStackTrace();
+                    }
+
+                    setNotificationText("Brightness Decreased!");
+                    Log.v(TAG, "Brightness Decrease");
+                }
+            }
+            else {
+                Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_WRITE_SETTINGS);
+                intent.setData(Uri.parse("package:" + this.getPackageName()));
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+
+                Log.v(TAG, "Ask for write android settings permissions");
+            }
+        }
+    }
+
+    private void setNotificationText(final String action) {
         noteText.setText(action);
     }
 }
