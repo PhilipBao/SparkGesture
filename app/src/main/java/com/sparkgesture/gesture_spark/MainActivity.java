@@ -18,9 +18,10 @@ import android.os.Environment;
 import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.MotionEventCompat;
+
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -28,12 +29,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Date;
+import java.util.Hashtable;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -43,6 +46,25 @@ public class MainActivity extends AppCompatActivity {
     private TextView noteText;
     private static final int brightUp = 0;
     private static final int brightDown = 1;
+
+    private enum Gesture {
+        UP,
+        DOWN,
+        NONE,
+        LEFT,
+        RIGHT
+    }
+
+    private static String MAIN_ACTIVITY_TAG = "MainActivity";
+
+
+    private Hashtable<Integer, Point2D> mActivePointers;
+    private Hashtable<Integer, Gesture> mActiveGestures;
+    private Gesture mDominateGesture;
+    private int mDominateCnt;
+    private boolean fired;
+
+    private final float MIN_MOVE_DIST = 20.0f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,8 +82,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
         noteText = (TextView) this.findViewById(R.id.notification_text);
         setTitle("Screen Gestures");
+
+        mActivePointers = new Hashtable<>();
+        mActiveGestures = new Hashtable<>();
+        mDominateGesture = Gesture.NONE;
+        mDominateCnt = 0;
+        fired = false;
+
     }
 
     @Override
@@ -86,40 +116,122 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    // This example shows an Activity, but you would use the same approach if
-    // you were subclassing a View.
-    // https://developer.android.com/training/gestures/detector.html
-    @Override
-    public boolean onTouchEvent(MotionEvent event){
+    public boolean onTouchEvent(MotionEvent event) {
 
-        int action = MotionEventCompat.getActionMasked(event);
+        // get pointer index from the event object
+        int pointerIndex = event.getActionIndex();
 
-        switch (action) {
-            case (MotionEvent.ACTION_DOWN) :
-                Log.d(TAG,"Action was DOWN");
-                //toggleFlashlight();
-                //takeScreenShot();
-                //openCamera();
-                //adjustBrightness(brightUp, 2);
-                changeRingerMode();
+        // get pointer ID
+        int pointerId = event.getPointerId(pointerIndex);
 
-                return true;
-            case (MotionEvent.ACTION_MOVE) :
-                Log.d(TAG,"Action was MOVE");
-                return true;
-            case (MotionEvent.ACTION_UP) :
-                Log.d(TAG,"Action was UP");
-                return true;
-            case (MotionEvent.ACTION_CANCEL) :
-                Log.d(TAG,"Action was CANCEL");
-                return true;
-            case (MotionEvent.ACTION_OUTSIDE) :
-                Log.d(TAG,"Movement occurred outside bounds " +
-                        "of current screen element");
-                return true;
-            default :
-                return super.onTouchEvent(event);
+        // get masked (not specific to a pointer) action
+        int maskedAction = event.getActionMasked();
+
+        switch (maskedAction) {
+            case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_POINTER_DOWN: {
+                Log.d(MAIN_ACTIVITY_TAG, "MotionEvent.DOWN: ~~~~~");
+                // We have a new pointer. Lets add it to the list of pointers
+
+                Point2D f = new Point2D();
+                f.x = event.getX(pointerIndex);
+                f.y = event.getY(pointerIndex);
+                mActivePointers.put(pointerId, f);
+                Log.d(MAIN_ACTIVITY_TAG, "    ~~~~~");
+                break;
+            }
+            case MotionEvent.ACTION_MOVE: { // a pointer was moved
+                Log.d(MAIN_ACTIVITY_TAG, "MotionEvent.ACTION_MOVE: ~~~~~");
+                for (int size = event.getPointerCount(), i = 0; i < size; i++) {
+                    int pntId = event.getPointerId(i);
+                    Point2D point = mActivePointers.get(pntId);
+
+                    if (point != null) {
+                        float oldX = point.x;
+                        float oldY = point.y;
+                        point.x = event.getX(i);
+                        point.y = event.getY(i);
+                        Log.d(MAIN_ACTIVITY_TAG, "oldX: " + oldX + " X: " + point.x + " oldY: " + oldY + " Y: " + point.y);
+                        float deltaX = point.x - oldX;
+                        float deltaY = point.y - oldY;
+                        if (deltaX < MIN_MOVE_DIST) {
+                            point.x = oldX;
+                        }
+                        if (deltaY < MIN_MOVE_DIST) {
+                            point.y = oldY;
+                        }
+                        mActivePointers.put(pntId, point);
+
+                        Gesture onGoingGesture = Gesture.NONE;
+
+                        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > MIN_MOVE_DIST) {
+                            if (deltaX < 0) {
+                                onGoingGesture = Gesture.LEFT;
+                            } else {
+                                onGoingGesture = Gesture.RIGHT;
+                            }
+                        } else if (Math.abs(deltaY) > MIN_MOVE_DIST){
+                            if (deltaY < 0) {
+                                onGoingGesture = Gesture.UP;
+                            } else {
+                                onGoingGesture = Gesture.DOWN;
+                            }
+                        }
+
+                        if (mActiveGestures.get(pntId) != onGoingGesture) {
+                            if (onGoingGesture != mDominateGesture) {
+                                --mDominateCnt;
+                                if (mDominateCnt <= 0) {
+                                    mDominateGesture = onGoingGesture;
+                                    mDominateCnt = 1;
+                                }
+                            } else if (onGoingGesture != Gesture.NONE) {
+                                ++mDominateCnt;
+                            }
+                        }
+                        mActiveGestures.put(pntId, onGoingGesture);
+                        Log.d(MAIN_ACTIVITY_TAG, "onGoingGesture: " + onGoingGesture + " deltaX: " + deltaX + " deltaY: " + deltaY);
+
+                    }
+                }
+                Log.d(MAIN_ACTIVITY_TAG, "dominate gesture: " + mDominateGesture + " with dominate count: " + mDominateCnt);
+                Log.d(MAIN_ACTIVITY_TAG, "    ~~~~~");
+                break;
+            }
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_POINTER_UP:
+            case MotionEvent.ACTION_CANCEL: {
+                Log.d(MAIN_ACTIVITY_TAG, "MotionEvent.UP: ~~~~~");
+                mActivePointers.remove(pointerId);
+                Gesture gestureEnd = mActiveGestures.get(pointerId);
+                if (gestureEnd == mDominateGesture) {
+                    if (!fired) {
+                        Toast.makeText(this, "Fired Gesture: " + mDominateGesture + " Finger count: " + mDominateCnt + "!", Toast.LENGTH_SHORT).show();
+                        Log.d(MAIN_ACTIVITY_TAG, "Fired Gesture: " + mDominateGesture + " Finger count: " + (mDominateCnt) + "!");
+                        fired =true;
+                    }
+                    --mDominateCnt;
+                    if (mDominateCnt <= 0) {
+                        mDominateGesture = Gesture.NONE;
+                        mDominateCnt = 0;
+                    }
+                }
+                if (mActivePointers.isEmpty()) {
+                    mDominateGesture = Gesture.NONE;
+                    mDominateCnt = 0;
+                    fired = false;
+                }
+                Log.d(MAIN_ACTIVITY_TAG, "dominate gesture: " + mDominateGesture + " with dominate count: " + mDominateCnt);
+                Log.d(MAIN_ACTIVITY_TAG, "    ~~~~~");
+                break;
+            }
         }
+        return true;
+    }
+
+    private class Point2D {
+        float x;
+        float y;
     }
 
     public void toggleFlashlight() {
