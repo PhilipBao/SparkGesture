@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
@@ -15,6 +16,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.ListPreference;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -41,7 +44,7 @@ import java.util.Hashtable;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static String TAG = "MainActivity";
+    public static final String TAG = "MainActivity";
 
     private boolean cameraStatus;
     private TextView noteText;
@@ -210,6 +213,7 @@ public class MainActivity extends AppCompatActivity {
                     if (!fired) {
                         Toast.makeText(this, "Fired Gesture: " + mDominateGesture + " Finger count: " + mDominateCnt + "!", Toast.LENGTH_SHORT).show();
                         Log.d(TAG, "Fired Gesture: " + mDominateGesture + " Finger count: " + (mDominateCnt) + "!");
+                        doActionFromPrefs();
                         fired =true;
                     }
                     --mDominateCnt;
@@ -229,6 +233,39 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return true;
+    }
+
+    private void doActionFromPrefs() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String action = "";
+
+        if (mDominateGesture == Gesture.DOWN) {
+            action = sharedPreferences.getString("gesture0_action_settings", "");
+        }
+        if (mDominateGesture == Gesture.UP) {
+            action = sharedPreferences.getString("gesture1_action_settings", "");
+        }
+        if (mDominateGesture == Gesture.LEFT) {
+            action = sharedPreferences.getString("gesture2_action_settings", "");
+        }
+        if (mDominateGesture == Gesture.RIGHT) {
+            action = sharedPreferences.getString("gesture3_action_settings", "");
+        }
+
+        doAction(action);
+    }
+
+    private void doAction(String action) {
+        switch (action) {
+            case "Flashlight": toggleFlashlight(); break;
+            case "Camera": openCamera(); break;
+            case "Screenshot": takeScreenShot(); break;
+            case "Brightness": break;
+            case "Normal/Silent/Vibrate Mode": break;
+            case "Pause/Play Music": break;
+            case "Next Music": break;
+            default: break;
+        }
     }
 
     private class Point2D {
@@ -489,7 +526,7 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
-    private void setNotificationText(final String action) {
+    public void setNotificationText(final String action) {
         noteText.setText(action);
     }
 }
