@@ -25,6 +25,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -35,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private static String MAIN_ACTIVITY_TAG = "MainActivity";
 
     private boolean cameraStatus;
+    private TextView noteText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +54,9 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+
+        noteText = (TextView) this.findViewById(R.id.notification_text);
+        setTitle("Screen Gestures");
     }
 
     @Override
@@ -86,8 +92,8 @@ public class MainActivity extends AppCompatActivity {
         switch (action) {
             case (MotionEvent.ACTION_DOWN) :
                 Log.d(MAIN_ACTIVITY_TAG,"Action was DOWN");
-                //toggleFlashlight();
-                takeScreenShot();
+                toggleFlashlight();
+                //takeScreenShot();
                 return true;
             case (MotionEvent.ACTION_MOVE) :
                 Log.d(MAIN_ACTIVITY_TAG,"Action was MOVE");
@@ -136,9 +142,11 @@ public class MainActivity extends AppCompatActivity {
                     if (!cameraStatus) {
                         camManager.setTorchMode(cameraId, true);
                         cameraStatus = true;
+                        setNotificationText("Torch On!");
                     } else {
                         camManager.setTorchMode(cameraId, false);
                         cameraStatus = false;
+                        setNotificationText("Torch Off!");
                     }
                 } catch (CameraAccessException e) {
                     e.printStackTrace();
@@ -193,15 +201,19 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
 
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_VIEW);
-                Uri uri = Uri.fromFile(imageFile);
-                intent.setDataAndType(uri, "image/*");
-                startActivity(intent);
+                setNotificationText("Screenshot Captured!");
             } catch (Throwable e) {
                 // Several error may come out with file handling or OOM
                 e.printStackTrace();
             }
         }
+    }
+
+    public void openCamera() {
+
+    }
+
+    private void setNotificationText(String action) {
+        noteText.setText(action);
     }
 }
